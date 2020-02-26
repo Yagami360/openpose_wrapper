@@ -1,0 +1,19 @@
+version: '2.3'
+
+services:
+    app:
+        container_name: openpose_ubuntu_gpu_container
+        image: openpose_ubuntu_gpu_image
+        volumes:
+            - ${PWD}:/home/user/share/openpose
+            - /etc/group:/etc/group:ro
+            - /etc/passwd:/etc/passwd:ro
+        build:
+            context: .
+            dockerfile: Dockerfile_gpu
+        tty: true
+        environment:
+            TZ: "Asia/Tokyo"
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        command: bash -c "nvidia-smi && ls && /bin/bash"
