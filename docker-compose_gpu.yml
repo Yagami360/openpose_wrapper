@@ -4,6 +4,7 @@ services:
     app:
         container_name: openpose_ubuntu_gpu_container
         image: openpose_ubuntu_gpu_image
+        runtime: nvidia
         volumes:
             - ${PWD}:/home/user/share/openpose_wrapper
             - /etc/group:/etc/group:ro
@@ -16,4 +17,4 @@ services:
             TZ: "Asia/Tokyo"
             LC_ALL: C.UTF-8
             LANG: C.UTF-8
-#        command: bash -c "nvidia-smi && ls && /bin/bash"
+        command: bash -c "nvidia-smi && ls && /bin/bash"
