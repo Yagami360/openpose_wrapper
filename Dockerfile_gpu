@@ -43,51 +43,48 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0
 ENV PATH="/opt/cmake-3.16.0-Linux-x86_64/bin:${PATH}"
 
 #-----------------------------
-# ユーザーの追加
-#-----------------------------
-ARG user_name=ubuntu
-ARG user_id=1000
-ARG group_name=ubuntu
-ARG group_id=1000
-ENV HOME=/home/${user_name}
-
-#RUN groupadd -g ${group_id} ${group_name}
-#RUN useradd -u ${user_id} -g ${group_id} -d ${HOME} --create-home --shell /bin/bash ${user_name}
-#RUN chown -R ${user_name}:${group_name} ${HOME}
-#RUN echo "${user_name} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
-#USER ${user_name}
-
-# user に sudo 権限を付与
-#RUN sudo gpasswd -a ${user_name} sudo
-
-# 全アクセスを許可
-#RUN chmod 777 /home/${user_name}
-
-#-----------------------------
 # 環境変数
 #-----------------------------
 ENV LC_ALL=C.UTF-8
 ENV export LANG=C.UTF-8
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-ENV PYTHONPATH=$PYTHONPATH:/usr/local/python/
+ENV PYTHONPATH=$PYTHONPATH:/usr/local/python
 
-#-----------------------------
-# 追加ライブラリのインストール
+ARG USER_NAME=ubuntu
+ARG USER_ID=1000
+ARG GROUP_NAME=sudo
+ENV HOME=/home/${USER_NAME}
+ARG WORK_DIR=${HOME}/share/openpose_wrapper
+
 #-----------------------------
 # openpose のインストール
-WORKDIR /openpose_wrapper
+#-----------------------------
+WORKDIR /openpose
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git .
 
-WORKDIR /openpose_wrapper/build
-RUN cmake -DBUILD_PYTHON=ON .. && make -j `nproc`
+WORKDIR /openpose/build
+RUN cmake \
+    -DBUILD_PYTHON=ON \
+    -DDOWNLOAD_BODY_MPI_MODEL:Bool=ON \
+    -DDOWNLOAD_BODY_COCO_MODEL:Bool=ON \
+    -DDOWNLOAD_FACE_MODEL:Bool=ON \
+    -DDOWNLOAD_HAND_MODEL:Bool=ON \
+    ..
+    
+RUN make -j `nproc`
 
-WORKDIR /openpose_wrapper/build/python/openpose
+WORKDIR /openpose/build/python/openpose
 RUN cp pyopenpose.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/dist-packages
 
 WORKDIR /usr/local/lib/python3.6/dist-packages
 RUN ln -s pyopenpose.cpython-36m-x86_64-linux-gnu.so pyopenpose
 
-# その他モジュールのインストール
+# ビルドした openpose を workdir にコピー
+ADD /openpose ${WORK_DIR}/
+
+#-----------------------------
+# 追加ライブラリのインストール
+#-----------------------------
 RUN pip3 install -U flask
 RUN pip3 install -U flask_cors
 RUN pip3 install -U requests
@@ -96,6 +93,38 @@ RUN pip3 install -U pillow
 RUN pip3 install -U tqdm
 
 #-----------------------------
+# ユーザーの追加
+#-----------------------------
+RUN useradd --create-home --uid ${USER_ID} --groups ${GROUP_NAME} --home-dir ${HOME} --shell /bin/bash ${USER_NAME}
+
+# ディレクトリの所有権を設定： sudo グループの設定
+RUN chown -R ${USER_NAME}:${GROUP_NAME} ${HOME}
+RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
+
+# user に sudo 権限を付与
+#RUN sudo gpasswd -a ${USER_NAME} sudo
+
+# ディレクトリのアクセス権を設定：全アクセスを許可
+RUN chmod 777 ${HOME}
+
+# 指定ユーザーに切り替え
+USER ${USER_NAME}
+
+#-----------------------------
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
-WORKDIR ${HOME}/share/openpose_wrapper
+WORKDIR ${WORK_DIR}
+
+#-----------------------------
+# モデルのダウンロード
+#-----------------------------
+#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/body_25/pose_iter_584000.caffemodel -o pose_iter_584000.caffemodel
+#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/coco/pose_iter_440000.caffemodel -o pose_iter_440000.caffemodel
+#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/face/pose_iter_116000.caffemodel -o pose_iter_116000.caffemodel
+#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/hand/pose_iter_102000.caffemodel -o pose_iter_102000.caffemodel
+#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/mpi/pose_iter_160000.caffemodel -o pose_iter_160000.caffemodel
+#RUN cp pose_iter_584000.caffemodel openpose/models/pose/body_25/
+#RUN cp pose_iter_440000.caffemodel openpose/models/pose/coco/
+#RUN cp pose_iter_160000.caffemodel openpose/models/pose/mpi/
+#RUN cp pose_iter_116000.caffemodel openpose/models/face/
+#RUN cp pose_iter_102000.caffemodel openpose/models/hand/

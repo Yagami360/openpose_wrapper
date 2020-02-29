@@ -1,5 +1,8 @@
 .DS_Store
 *.code-workspace
 *.pyc
+*.caffemodel
+*.out
 
+_old/*
 openpose/*
