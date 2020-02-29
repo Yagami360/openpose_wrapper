@@ -116,17 +116,3 @@ USER ${USER_NAME}
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
 WORKDIR ${WORK_DIR}
-
-#-----------------------------
-# モデルのダウンロード
-#-----------------------------
-#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/body_25/pose_iter_584000.caffemodel -o pose_iter_584000.caffemodel
-#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/coco/pose_iter_440000.caffemodel -o pose_iter_440000.caffemodel
-#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/face/pose_iter_116000.caffemodel -o pose_iter_116000.caffemodel
-#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/hand/pose_iter_102000.caffemodel -o pose_iter_102000.caffemodel
-#RUN curl http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/mpi/pose_iter_160000.caffemodel -o pose_iter_160000.caffemodel
-#RUN cp pose_iter_584000.caffemodel openpose/models/pose/body_25/
-#RUN cp pose_iter_440000.caffemodel openpose/models/pose/coco/
-#RUN cp pose_iter_160000.caffemodel openpose/models/pose/mpi/
-#RUN cp pose_iter_116000.caffemodel openpose/models/face/
-#RUN cp pose_iter_102000.caffemodel openpose/models/hand/

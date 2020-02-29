@@ -8,12 +8,13 @@ GPU 版 OpenPose と CPU 版 OpenPose の両方に対応しています。<br>
 -->
 
 ## ■ 動作環境
-docker-compose 環境で動作します。
+docker-compose 環境で動作します。<br>
+GPU 版は nvidia-docker2 がインストールされている必要があります。
 
 ## ■ 使用法
 
-### ◎ Ubuntu 16.04 + GPU 版 OpenPose の Docker イメージ
-nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージを使用してください。nvidia-docker2 で動作します。
+### ◎ Ubuntu + GPU 版 OpenPose の Docker
+nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージを使用してください。
 
 - Docker イメージの作成＆コンテナの起動
     以下のコマンドを実行。
@@ -28,7 +29,7 @@ nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージ�
     $ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_gpu_container bash
     ```
 
-- OpenPose の実行<br>
+- OpenPose の実行（サーバー機能非使用）<br>
     Docker コンテナに入ったあと、以下のコマンドを実行。
     ```sh
     # /home/ubuntu/share/openpose_wrapper
@@ -48,16 +49,42 @@ nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージ�
         --hand
     ```
 
-### ◎ Ubuntu 16.04 + CPU 版 OpenPose の Docker イメージ
+### ◎ Ubuntu + CPU 版 OpenPose の Docker イメージ
 準備中...
 
 <!--
 CPU で OpenPose を使用する場合は、こちらのイメージを使用してください。<br>
 
-- Docker イメージの作成＆コンテナの起動（docker-compose を用いる場合）
+- Docker イメージの作成＆コンテナの起動
+    以下のコマンドを実行。
+    ```sh
+    $ sh run_docker-compose_cpu.sh
+    ```
+
+    又は、以下のコマンド例を実行。
     ```sh
     $ docker-compose -f docker-compose_cpu.yml up -d
     $ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_cpu_container bash
+    ```
+
+- OpenPose の実行<br>
+    Docker コンテナに入ったあと、以下のコマンドを実行。
+    ```sh
+    # /home/ubuntu/share/openpose_wrapper
+    $ sh run_openpose_cpu.sh
+    ```
+
+    又は、以下のコマンド例を実行。
+    ```sh
+    # /home/ubuntu/share/openpose_wrapper
+    $ cd openpose_cpu
+
+    # コマンド例
+    $ ./build/examples/openpose/openpose.bin \
+        --model_pose COCO \
+        --image_dir ../sample_n5 --write_json ../results_json --write_images ../results_image \
+        --display 0 \
+        --hand
     ```
 -->
 
