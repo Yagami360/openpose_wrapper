@@ -59,10 +59,10 @@ ARG WORK_DIR=${HOME}/share/openpose_wrapper
 #-----------------------------
 # openpose のインストール
 #-----------------------------
-WORKDIR /openpose
+WORKDIR /openpose_gpu
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git .
 
-WORKDIR /openpose/build
+WORKDIR /openpose_gpu/build
 RUN cmake \
     -DBUILD_PYTHON=ON \
     -DDOWNLOAD_BODY_MPI_MODEL:Bool=ON \
@@ -73,14 +73,16 @@ RUN cmake \
     
 RUN make -j `nproc`
 
-WORKDIR /openpose/build/python/openpose
+WORKDIR /openpose_gpu/build/python/openpose
 RUN cp pyopenpose.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/dist-packages
 
 WORKDIR /usr/local/lib/python3.6/dist-packages
 RUN ln -s pyopenpose.cpython-36m-x86_64-linux-gnu.so pyopenpose
 
 # ビルドした openpose を workdir にコピー
-ADD /openpose ${WORK_DIR}/
+WORKDIR ${WORK_DIR}/openpose_gpu
+WORKDIR /
+RUN cp -r openpose_gpu ${WORK_DIR}/
 
 #-----------------------------
 # 追加ライブラリのインストール
