@@ -1,19 +1,23 @@
 # openpose_wrapper
 OpenPose のラッパーモジュール。<br>
-Docker を用いて OpenPose のインストールから実行までを自動的に行います。<br>
-現在 GPU 版のみ動作します。
+Docker を用いて OpenPose のインストールから実行までを自動的に行います。また、サーバー機能（OpenPose server）も追加しています。<br>
+現在 GPU 版のみ動作します。<br>
 
 <!--
 GPU 版 OpenPose と CPU 版 OpenPose の両方に対応しています。<br>
 -->
 
-## ■ 動作環境
-docker-compose 環境で動作します。<br>
-GPU 版は nvidia-docker2 がインストールされている必要があります。
+## ■ サーバー機能非使用時
 
-## ■ 使用法
+### ◎ 動作環境
 
-### ◎ Ubuntu + GPU 版 OpenPose の Docker
+- docker 環境で動作します。<br>
+- GPU 版は、nvidia 製 GPU が搭載されていないマシンでは動作しません。
+- GPU 版は、nvidia-docker2 がインストールされている必要があります。
+
+### ◎ 使用法
+
+#### ☆ Ubuntu + GPU 版 OpenPose の Docker
 nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージを使用してください。
 
 - Docker イメージの作成＆コンテナの起動
@@ -24,19 +28,19 @@ nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージ�
 
     又は、以下のコマンド例を実行。
     ```sh
-    # コマンド例
+    # コマンド例（docker-compose を使用する場合）
     $ docker-compose -f docker-compose_gpu.yml up -d
     $ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_gpu_container bash
     ```
 
 - OpenPose の実行（サーバー機能非使用）<br>
-    Docker コンテナに入ったあと、以下のコマンドを実行。
+    Docker コンテナ内で、以下のコマンドを実行。
     ```sh
     # /home/ubuntu/share/openpose_wrapper
     $ sh run_openpose_gpu.sh
     ```
 
-    又は、以下のコマンド例を実行。
+    又は、Docker コンテナ内で、以下のコマンド例を実行。
     ```sh
     # /home/ubuntu/share/openpose_wrapper
     $ cd openpose_gpu
@@ -49,7 +53,7 @@ nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージ�
         --hand
     ```
 
-### ◎ Ubuntu + CPU 版 OpenPose の Docker イメージ
+#### ☆ Ubuntu + CPU 版 OpenPose の Docker イメージ
 準備中...
 
 <!--
@@ -88,7 +92,65 @@ CPU で OpenPose を使用する場合は、こちらのイメージを使用し
     ```
 -->
 
-### ◎ OpenPose の主なオプション引数
+## ■ サーバー機能使用時
+
+### ◎ 動作環境
+
+- docker 環境で動作します。<br>
+- GPU 版は、nvidia 製 GPU が搭載されていないマシンでは動作しません。
+- GPU 版は、nvidia-docker2 がインストールされている必要があります。
+
+サーバーへのリクエスト処理 `openpose_server/request.py` のみ、以下の conda 環境で動作します。
+
+- Ubuntu : （シェルスクリプト `.sh` のみ）
+- Python : 3.6
+- Anaconda : 
+- tqdm : 
+- requests :
+
+### ◎ 使用法
+
+#### ☆ Ubuntu + GPU 版 OpenPose の Docker
+nvidia 製 GPU で OpenPose を使用する場合は、こちらのイメージを使用してください。<br>
+デフォルト設定では、5010 番ポートが開放されている必要があります。
+使用するポート番号は、`docker-compose_gpu.yml` 内の `ports:` タグ、及び、`openpose_server/app.py`, `openpose_server/request.py` の `--port` 引数の値を設定することで変更できます。<br>
+
+- Docker イメージの作成＆コンテナの起動
+    以下のコマンド例を実行。
+    ```sh
+    # コマンド例（docker-compose を使用する場合）
+    $ docker-compose -f docker-compose_gpu.yml up -d
+    ```
+
+- OpenPose サーバーの立ち上げ＆実行）<br>
+    以下のコマンドを実行。
+    ```sh
+    $ sh run_openpose_server_gpu.sh
+    ```
+
+    又は、以下のコマンドを実行
+    ```sh
+    # コンテナの起動
+    $ docker-compose -f docker-compose_gpu.yml up -d
+
+    # コンテナ内部に入る ＆ サーバー起動スクリプトの実行
+    $ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_gpu_container /bin/bash -c "cd openpose_server && \
+        python3 app.py \
+            --host 0.0.0.0 --port 5010"
+    ```
+
+- OpenPose サーバーへのリクエスト処理<br>
+    OpenPose サーバー実行後、以下のコマンドを実行。
+    ```sh
+    $ cd openpose_server
+    $ python request.py \
+        --host 0.0.0.0 --port 5010 \
+        --image_dir ../sample_n5 \
+        --write_json ../results_json \
+        --write_images ../results_image
+    ```
+
+## 【参考】 OpenPose の主なオプション引数
 
 - `--help`: 全てのコマンドオプションを表示
 - `--face`: 顔検出を有効にする

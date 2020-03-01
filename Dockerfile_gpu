@@ -47,8 +47,6 @@ ENV PATH="/opt/cmake-3.16.0-Linux-x86_64/bin:${PATH}"
 #-----------------------------
 ENV LC_ALL=C.UTF-8
 ENV export LANG=C.UTF-8
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-ENV PYTHONPATH=$PYTHONPATH:/usr/local/python
 
 ARG USER_NAME=ubuntu
 ARG USER_ID=1000
@@ -70,19 +68,16 @@ RUN cmake \
     -DDOWNLOAD_FACE_MODEL:Bool=ON \
     -DDOWNLOAD_HAND_MODEL:Bool=ON \
     ..
-    
-RUN make -j `nproc`
+
+RUN make -j `nproc`   
+#RUN make -j nproc
 
 WORKDIR /openpose_gpu/build/python/openpose
 RUN cp pyopenpose.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/dist-packages
 
+# pyopenpose 使用のための設定
 WORKDIR /usr/local/lib/python3.6/dist-packages
 RUN ln -s pyopenpose.cpython-36m-x86_64-linux-gnu.so pyopenpose
-
-# ビルドした openpose を workdir にコピー
-WORKDIR ${WORK_DIR}/openpose_gpu
-WORKDIR /
-RUN cp -r openpose_gpu ${WORK_DIR}/
 
 #-----------------------------
 # 追加ライブラリのインストール
@@ -93,6 +88,7 @@ RUN pip3 install -U requests
 RUN pip3 install -U gunicorn
 RUN pip3 install -U pillow
 RUN pip3 install -U tqdm
+RUN pip3 install -U numpy
 
 #-----------------------------
 # ユーザーの追加
@@ -116,3 +112,15 @@ USER ${USER_NAME}
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
 WORKDIR ${WORK_DIR}
+
+# ビルドした openpose を workdir にコピー
+RUN sudo cp -r /openpose_gpu .
+
+# Python API のパス
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+#ENV PYTHONPATH=$PYTHONPATH:/usr/local/python
+#ENV PYTHONPATH=$PYTHONPATH:/usr/local/python/openpose
+#ENV PYTHONPATH=$PYTHONPATH:/openpose/build/python/openpose
+
+ENV PYTHONPATH=$PYTHONPATH:${WORK_DIR}/openpose/build/python
+#ENV PYTHONPATH=$PYTHONPATH:${WORK_DIR}/openpose/build/python/openpose

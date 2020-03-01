@@ -35,8 +35,7 @@ RUN pip3 install -U numpy opencv-python
 #-----------------------------
 ENV LC_ALL=C.UTF-8
 ENV export LANG=C.UTF-8
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-ENV PYTHONPATH=$PYTHONPATH:/usr/local/python
+ENV PYTHONPATH /usr/local/python/openpose
 
 ARG USER_NAME=ubuntu
 ARG USER_ID=1000
@@ -70,6 +69,7 @@ RUN cmake \
 
 # CPU 版では nprocとは打たずに、使用可能なCPU数を書く。引数無しにすれば、勝手に数を判断
 RUN make -j
+#RUN make -j nproc
 
 # 
 WORKDIR /openpose_cpu/build/python/openpose
@@ -77,11 +77,6 @@ RUN cp pyopenpose.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/dist-
 
 WORKDIR /usr/local/lib/python3.6/dist-packages
 RUN ln -s pyopenpose.cpython-36m-x86_64-linux-gnu.so pyopenpose
-
-# ビルドした openpose を workdir にコピー
-WORKDIR ${WORK_DIR}/openpose_cpu
-WORKDIR /
-RUN cp -r openpose_cpu ${WORK_DIR}/
 
 #-----------------------------
 # 追加ライブラリのインストール
@@ -92,6 +87,7 @@ RUN pip3 install -U requests
 RUN pip3 install -U gunicorn
 RUN pip3 install -U pillow
 RUN pip3 install -U tqdm
+RUN pip3 install -U numpy
 
 #-----------------------------
 # ユーザーの追加
@@ -113,3 +109,11 @@ USER ${USER_NAME}
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
 WORKDIR ${WORK_DIR}
+
+# ビルドした openpose を workdir にコピー
+RUN sudo cp -r /openpose_cpu .
+
+# Python API のパス
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+ENV PYTHONPATH=$PYTHONPATH:/openpose/build/python/openpose
+#ENV PYTHONPATH=$PYTHONPATH:${WORK_DIR}/openpose/build/python/openpose

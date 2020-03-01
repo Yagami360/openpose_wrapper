@@ -19,4 +19,4 @@ services:
             TZ: "Asia/Tokyo"
             LC_ALL: C.UTF-8
             LANG: C.UTF-8
-        command: bash -c "cp -r /openpose_gpu . && /bin/bash"
+        command: bash -c "sudo cp -r /openpose_gpu . && /bin/bash"
