@@ -11,6 +11,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile_cpu
+        ports:
+            - "5011:5011"
         tty: true
         environment:
             TZ: "Asia/Tokyo"

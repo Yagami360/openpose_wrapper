@@ -12,6 +12,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile_gpu
+        ports:
+            - "5010:5010"
         tty: true
         environment:
             TZ: "Asia/Tokyo"

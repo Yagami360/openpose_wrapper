@@ -1,7 +1,7 @@
 #-----------------------------
 # ベースイメージ
 #-----------------------------
-FROM nvidia/cuda:10.0-cudnn7-devel
+FROM ubuntu:18.04
 
 #-----------------------------
 # 基本ライブラリのインストール
@@ -20,26 +20,15 @@ RUN set -x && \
     curl \
     bzip2 \
     make \
-    libprotobuf-dev \
-    protobuf-compiler \
-    libgoogle-glog-dev \
-    libboost-all-dev \
-    libcaffe-cuda-dev \
-    libhdf5-dev \
-    libatlas-base-dev \
+    cmake \
+    apt-utils \
+    lsb-core \
     libopencv-dev \
     # imageのサイズを小さくするためにキャッシュ削除
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install -U numpy opencv-python 
-
-# cmake のインストール（replace cmake as old version has CUDA variable bugs）
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.tar.gz && \
-    tar xzf cmake-3.16.0-Linux-x86_64.tar.gz -C /opt && \
-    rm cmake-3.16.0-Linux-x86_64.tar.gz
-
-ENV PATH="/opt/cmake-3.16.0-Linux-x86_64/bin:${PATH}"
 
 #-----------------------------
 # 環境変数
@@ -61,6 +50,14 @@ ARG WORK_DIR=${HOME}/share/openpose_wrapper
 WORKDIR /openpose_cpu
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git .
 
+# openpose_cpu/scripts/ubuntu 以下のシェルスクリプトの書き換え
+WORKDIR /openpose_cpu/scripts/ubuntu
+RUN sed -i 's/\<sudo -H\>//g' install_deps.sh; \
+    sed -i 's/\<sudo\>//g' install_deps.sh; \
+    sed -i 's/\<easy_install pip\>//g' install_deps.sh; \
+    sync; sleep 1; bash install_deps.sh
+
+# openpose のビルド
 WORKDIR /openpose_cpu/build
 RUN cmake \
     -DGPU_MODE:String=CPU_ONLY \
@@ -73,8 +70,8 @@ RUN cmake \
 
 # CPU 版では nprocとは打たずに、使用可能なCPU数を書く。引数無しにすれば、勝手に数を判断
 RUN make -j
-#RUN make -j `nproc`
 
+# 
 WORKDIR /openpose_cpu/build/python/openpose
 RUN cp pyopenpose.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/dist-packages
 
