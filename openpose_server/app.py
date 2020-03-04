@@ -22,11 +22,14 @@ from utils import conv_base64_to_pillow, conv_base64_to_cv, conv_pillow_to_base6
 #======================
 # グローバル変数
 #======================
+# flask 関連
 app = flask.Flask(__name__)
 app.config['JSON_AS_ASCII'] = False     # 日本語文字化け対策
 app.config["JSON_SORT_KEYS"] = False    # ソートをそのまま
 
-OPENPOSE_MODE_DIR_PATH = "../openpose_gpu/models/"
+# openpose 関連
+debug = False
+openpose_model_dir_path = "../openpose_gpu/models/"
 
 #================================================================
 # "http://host_ip:5010" リクエスト送信時の処理
@@ -67,7 +70,7 @@ def responce():
     #------------------------------------------
     # パラメーターの設定
     params = dict()
-    params["model_folder"] = OPENPOSE_MODE_DIR_PATH
+    params["model_folder"] = openpose_model_dir_path
     params["face"] = True
     params["hand"] = True
 
@@ -138,6 +141,7 @@ if __name__ == "__main__":
     parser.add_argument('--host', type=str, default="0.0.0.0", help="ホスト名（コンテナ名 or コンテナ ID）")
     parser.add_argument('--port', type=str, default="5010", help="ポート番号")
     parser.add_argument('--enable_threaded', action='store_true', help="並列処理有効化")
+    parser.add_argument('--openpose_model_dir_path', type=str, default="../openpose_gpu/models/", help="学習済みモデルのパス")
     parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
     args = parser.parse_args()
     if( args.debug ):
@@ -147,11 +151,12 @@ if __name__ == "__main__":
     if not os.path.exists("tmp"):
         os.mkdir("tmp")
         
-    if( args.debug ):
-        app.debug = True
-    else:
-        app.debug = False
+    # グローバル変数の設定
+    debug = args.debug
+    openpose_model_dir_path = args.openpose_model_dir_path
 
+    # Flask の実行
+    app.debug = args.debug
     if( args.enable_threaded ):
         app.run( host=args.host, port=args.port, threaded=False )
     else:

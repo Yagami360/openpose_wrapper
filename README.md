@@ -1,25 +1,57 @@
 # openpose_wrapper
 OpenPose のラッパーモジュール。<br>
-Docker を用いて OpenPose のインストールから実行までを自動的に行います。また、サーバー機能（OpenPose server）も追加しています。<br>
+以下の機能を追加しています。<br>
+- Docker を用いて OpenPose のインストールから実行までを自動的に行う。
+- サーバー機能を追加。<br>
+
 現在 GPU 版のみ動作します。<br>
 
 <!--
 GPU 版 OpenPose と CPU 版 OpenPose の両方に対応しています。<br>
 -->
 
-## ■ サーバー機能非使用時
+## ■ 目次
 
-### ◎ 動作環境
+1. [動作環境](#動作環境)
+1. [使用法](#使用法)
+    1. [サーバー機能を使用しない場合](#サーバー機能を使用しない場合)
+        1. [GPU 版 OpenPose](#サーバー機能を使用しない場合_GPU版OpenPose)
+        1. [CPU 版 OpenPose](#サーバー機能を使用しない場合_CPU版OpenPose（CPU版OpenPose）)
+    1. [サーバー機能を使用する場合](#サーバー機能を使用する場合)
+        1. [GPU 版 OpenPose](#サーバー機能を使用する場合_GPU版OpenPose)
+        1. [CPU 版 OpenPose](#サーバー機能を使用する場合_CPU版OpenPose)
+1. [【参考】 OpenPose の主なオプション引数](#【参考】OpenPoseの主なオプション引数)
 
-- docker 環境で動作します。<br>
-- GPU 版 OpenPose は、nvidia 製 GPU が搭載されていないマシンでは動作しません。
+<a id="動作環境"></a>
+
+## ■ 動作環境
+
+- Ubuntu :
+- docker, docker-compose 環境で動作します。<br>
+- GPU 版 OpenPose は、nvidia 製 GPU が搭載されているマシンのみで動作します。
 - GPU 版 OpenPose は、nvidia-docker2 がインストールされている必要があります。
-- シェルスクリプト `.sh` のみ Windows 非対応です。
 
-### ◎ 使用法
+<!--
+サーバーへのリクエスト処理 `openpose_server/request.py` のみ、以下の conda 環境で動作します。
+
+- Python : 3.6
+- Anaconda : 
+- tqdm : 
+- requests :
+-->
+
+<a id="使用法"></a>
+
+## ■ 使用法
+
+<a id="サーバー機能を使用しない場合"></a>
+
+### ◎ サーバー機能を使用しない場合
+
+<a id="サーバー機能を使用しない場合_GPU版OpenPose"></a>
 
 #### ☆ GPU 版 OpenPose
-「Ubuntu + GPU 版 OpenPose」の Docker イメージを使用して、コンテナ内で OpenPose を実行します。Docker イメージの作成には時間がかかります。
+「Ubuntu + GPU 版 OpenPose」の Docker イメージを使用して、コンテナ内で OpenPose を実行します。Docker イメージの作成には長時間がかかります。
 
 <!--
 - Docker イメージの作成＆コンテナの起動<br>
@@ -57,6 +89,8 @@ GPU 版 OpenPose と CPU 版 OpenPose の両方に対応しています。<br>
         --display 0 \
         --hand
     ```
+
+<a id="サーバー機能を使用しない場合_CPU版OpenPose"></a>
 
 #### ☆ CPU 版 OpenPose
 準備中...
@@ -99,22 +133,11 @@ CPU で OpenPose を使用する場合は、こちらのイメージを使用し
     ```
 -->
 
-## ■ サーバー機能使用時
+<a id="サーバー機能を使用する場合"></a>
 
-### ◎ 動作環境
+### ◎ サーバー機能を使用する場合
 
-- docker 環境で動作します。<br>
-- GPU 版は、nvidia 製 GPU が搭載されていないマシンでは動作しません。
-- GPU 版は、nvidia-docker2 がインストールされている必要があります。
-
-サーバーへのリクエスト処理 `openpose_server/request.py` のみ、以下の conda 環境で動作します。
-
-- Python : 3.6
-- Anaconda : 
-- tqdm : 
-- requests :
-
-### ◎ 使用法
+<a id="サーバー機能を使用する場合_GPU版OpenPoseサーバー"></a>
 
 #### ☆ GPU 版 OpenPose サーバー
 サーバー機能非使用時の GPU 版 Docker イメージと同様のイメージを使用し、コンテナ内でサーバーを起動して OpenPose を実行します。<br>
@@ -157,8 +180,12 @@ CPU で OpenPose を使用する場合は、こちらのイメージを使用し
         --write_json ../results_json
     ```
 
+<a id="サーバー機能を使用する場合_CPU版OpenPoseサーバー"></a>
+
 #### ☆ CPU 版 OpenPose サーバー
 準備中...
+
+<a id="【参考】OpenPoseの主なオプション引数"></a>
 
 ## 【参考】 OpenPose の主なオプション引数
 
