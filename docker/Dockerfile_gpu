@@ -33,6 +33,7 @@ RUN set -x && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -U numpy opencv-python 
 
 # cmake のインストール（replace cmake as old version has CUDA variable bugs）
@@ -47,12 +48,6 @@ ENV PATH="/opt/cmake-3.16.0-Linux-x86_64/bin:${PATH}"
 #-----------------------------
 ENV LC_ALL=C.UTF-8
 ENV export LANG=C.UTF-8
-
-ARG USER_NAME=ubuntu
-ARG USER_ID=1000
-ARG GROUP_NAME=sudo
-ENV HOME=/home/${USER_NAME}
-ARG WORK_DIR=${HOME}/share/openpose_wrapper
 
 #-----------------------------
 # openpose のインストール
@@ -91,27 +86,9 @@ RUN pip3 install -U tqdm
 RUN pip3 install -U numpy
 
 #-----------------------------
-# ユーザーの追加
-#-----------------------------
-RUN useradd --create-home --uid ${USER_ID} --groups ${GROUP_NAME} --home-dir ${HOME} --shell /bin/bash ${USER_NAME}
-
-# ディレクトリの所有権を設定： sudo グループの設定
-RUN chown -R ${USER_NAME}:${GROUP_NAME} ${HOME}
-RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-user
-
-# user に sudo 権限を付与
-#RUN sudo gpasswd -a ${USER_NAME} sudo
-
-# ディレクトリのアクセス権を設定：全アクセスを許可
-RUN chmod 777 ${HOME}
-
-# 指定ユーザーに切り替え
-USER ${USER_NAME}
-
-#-----------------------------
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
-WORKDIR ${WORK_DIR}
+WORKDIR /openpose_wrapper
 
 # ビルドした openpose を workdir にコピー
 RUN sudo cp -r /openpose_gpu .

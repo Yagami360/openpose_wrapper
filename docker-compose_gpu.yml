@@ -6,12 +6,12 @@ services:
         image: openpose_ubuntu_gpu_image
         runtime: nvidia
         volumes:
-            - ${PWD}:/home/ubuntu/share/openpose_wrapper
+            - ${PWD}:/openpose_wrapper
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro
         build:
             context: .
-            dockerfile: Dockerfile_gpu
+            dockerfile: docker/Dockerfile_gpu
         ports:
             - "5010:5010"
         tty: true
