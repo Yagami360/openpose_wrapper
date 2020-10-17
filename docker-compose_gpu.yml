@@ -7,6 +7,7 @@ services:
         runtime: nvidia
         volumes:
             - ${PWD}:/openpose_wrapper
+            - ${PWD}/openpose_gpu:/openpose_gpu
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro
         build:
@@ -19,4 +20,4 @@ services:
             TZ: "Asia/Tokyo"
             LC_ALL: C.UTF-8
             LANG: C.UTF-8
-        command: bash -c "sudo cp -r /openpose_gpu . && /bin/bash"
+        command: bash -c "cd openpose_server && python3 app.py --host 0.0.0.0 --port 5010 --debug"

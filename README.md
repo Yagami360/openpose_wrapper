@@ -153,32 +153,29 @@ CPU で OpenPose を使用する場合は、こちらのイメージを使用し
     ```
 -->
 
-- Docker イメージの作成 ＆ OpenPose サーバーの起動 ＆ API の実行<br>
-    以下のコマンドを実行。
-    ```sh
-    $ sh run_openpose_server_gpu.sh
-    ```
+以下のコマンドを実行。
+```sh
+$ sh run_openpose_request_gpu.sh
+```
 
-    又は、以下のコマンドを実行
-    ```sh
-    # コンテナの起動
-    $ docker-compose -f docker-compose_gpu.yml up -d
+又は、以下のコマンドを実行
+```sh
+# コンテナの起動
+$ docker-compose -f docker-compose_gpu.yml up -d
 
-    # コンテナ内部に入る ＆ サーバー起動スクリプトの実行
-    $ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_gpu_container /bin/bash -c "cd openpose_server && \
-        python3 app.py \
-            --host 0.0.0.0 --port 5010"
-    ```
+# コンテナ内部に入る ＆ サーバー起動スクリプトの実行
+$ docker exec -it -u $(id -u $USER):$(id -g $USER) openpose_ubuntu_gpu_container /bin/bash -c "cd openpose_server && \
+    python3 app.py \
+        --host 0.0.0.0 --port 5010"
 
-- OpenPose サーバーへのリクエスト処理<br>
-    OpenPose サーバー起動後、以下のコマンドを実行。
-    ```sh
-    $ cd openpose_server
-    $ python request.py \
-        --host 0.0.0.0 --port 5010 \
-        --image_dir ../sample_n5 \
-        --write_json ../results_json
-    ```
+# OpenPose サーバーへのリクエスト処理
+$ cd openpose_server
+$ python request.py \
+    --host 0.0.0.0 --port 5010 \
+    --image_dir ../sample_n5 \
+    --write_json ../results_json
+```
+
 
 <a id="サーバー機能を使用する場合_CPU版OpenPoseサーバー"></a>
 

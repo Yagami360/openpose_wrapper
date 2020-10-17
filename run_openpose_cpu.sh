@@ -12,7 +12,7 @@ mkdir -p ${WRITE_IMAGE}
 
 docker-compose -f docker-compose_cpu.yml stop
 docker-compose -f docker-compose_cpu.yml up -d
-sleep 30
+sleep 5
 
 docker exec -it -u $(id -u $USER):$(id -g $USER) ${CONTAINER_NAME} /bin/bash -c "cd openpose_cpu && \
     ./build/examples/openpose/openpose.bin \
