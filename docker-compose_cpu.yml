@@ -6,6 +6,7 @@ services:
         image: openpose_ubuntu_cpu_image
         volumes:
             - ${PWD}:/openpose_wrapper
+            - ${PWD}/openpose_cpu:/openpose_cpu
             - /etc/group:/etc/group:ro
             - /etc/passwd:/etc/passwd:ro
         build:
