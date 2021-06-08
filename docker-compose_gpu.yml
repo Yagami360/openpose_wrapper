@@ -2,8 +2,8 @@ version: '2.3'
 
 services:
     app:
-        container_name: openpose_ubuntu_gpu_container
-        image: openpose_ubuntu_gpu_image
+        container_name: openpose-gpu-container
+        image: openpose-gpu-image
         runtime: nvidia
         volumes:
             - ${PWD}:/openpose_wrapper

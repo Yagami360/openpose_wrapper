@@ -1,19 +1,16 @@
 #!/bin/sh
-set -eu
+set -e
+HOST=0.0.0.0
+POST=5010
 
+# API 起動
 docker-compose -f docker-compose_gpu.yml stop
 docker-compose -f docker-compose_gpu.yml up -d
-sleep 5
 
-#HOST_NAME=localhost
-#HOST_NAME=openpose_ubuntu_gpu_container
-HOST_NAME=0.0.0.0
-
+# リクエスト処理
 cd openpose_server
 python request.py \
-    --host ${HOST_NAME} --port 5010 \
+    --host ${HOST} --port ${POST} \
     --image_dir ../sample_n5 \
     --write_json ../results_json \
     --debug
-
-#    --write_images ../results_image \

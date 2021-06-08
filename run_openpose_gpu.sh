@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CONTAINER_NAME=openpose_ubuntu_gpu_container
+CONTAINER_NAME=openpose-gpu-container
 IMAGE_DIR=sample_n5
 WRITE_JSON=results_json
 WRITE_IMAGE=results_image

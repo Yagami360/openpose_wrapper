@@ -19,7 +19,7 @@ IMG_EXTENSIONS = (
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', type=str, default="localhost", help="OpenPose サーバーのホスト名（コンテナ名 or コンテナ ID）")
-    #parser.add_argument('--host', type=str, default="openpose_ubuntu_gpu_container", help="OpenPose サーバーのホスト名（コンテナ名 or コンテナ ID）")
+    #parser.add_argument('--host', type=str, default="openpose-gpu-container", help="OpenPose サーバーのホスト名（コンテナ名 or コンテナ ID）")
     parser.add_argument('--port', type=str, default="5010", help="OpenPose サーバーのポート番号")
     parser.add_argument('--image_dir', type=str, default="../sample_n5", help="入力静止画像のディレクトリ")
     parser.add_argument('--write_json', type=str, default="../results_json", help="json 形式の出力結果を保存するディレクトリ")
